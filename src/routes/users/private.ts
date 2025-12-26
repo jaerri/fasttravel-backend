@@ -1,4 +1,5 @@
-import { type FastifyPluginAsyncTypebox, Type } from "@fastify/type-provider-typebox";
+import { type FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { Type } from "@sinclair/typebox";
 import { usersTable } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 import { userPrivateFields } from "../../viewSchemas/users.js";
@@ -32,7 +33,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             schema: {
                 body: updateUserBody,
                 response: {
-                    200: updateUserBody
+                    // 200: updateUserBody
                 }
             }
         },
@@ -45,7 +46,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
                 .set(update)
                 .where(eq(usersTable.id, id)).returning();
             if (user) {
-                return reply.send(update);
+                return reply.send(user);
             }
         }
     )

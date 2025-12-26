@@ -46,7 +46,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         {
             schema: {
                 response: {
-                    200: Type.Object(vehiclePrivateFields.TypeBoxSchema)
+                    200: Type.Object({
+                        vehicles: Type.Array(
+                        Type.Object(vehiclePrivateFields.TypeBoxSchema)
+                    )})
                 }
             }
         },
