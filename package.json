@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "rm -r dist && npm run build && node dist/index.js"
+    "start": "rm -r dist; npm run build && node dist/index.js"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

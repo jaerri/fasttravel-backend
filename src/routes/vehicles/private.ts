@@ -1,32 +1,42 @@
-import { Type, type FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { type FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { Type } from "@sinclair/typebox";
 import { vehiclesTable } from "../../db/schema.js";
-import { VehicleUpdateTypeBox } from "../../validation_schemas/vehicles.js";
 import type { onRequestHookHandler } from "fastify";
-import type { IParamsId } from "../../validation_schemas/shared.js";
+import type { IParamsId } from "../../viewSchemas/shared.js";
 import { and, eq } from "drizzle-orm";
-import { createSelectSchema } from "drizzle-typebox";
+import { vehiclePrivateFields } from "../../viewSchemas/vehicles.js";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     const { db } = fastify;
     fastify.addHook("onRequest", fastify.getDecorator<onRequestHookHandler>("authenticate"));
+    const vehicleUpdateTypeBox = Type.Partial(Type.Object(
+        vehiclePrivateFields.TypeBoxSchema,
+        { additionalProperties: false }
+    ));
+
     fastify.post('/',
         {
             schema: {
-                body: Type.Omit(VehicleUpdateTypeBox, ['ownerId'])
+                body: vehicleUpdateTypeBox,
+                response: {
+                    200: vehicleUpdateTypeBox
+                }
             },
         },
         async (request, reply) => {
             const { id } = request.user;
-            const insert: typeof vehiclesTable.$inferInsert = {
+            const insert = {
                 ownerId: id,
                 ...request.body
             }
             try {
                 const [vehicle] = await db.insert(vehiclesTable).values(insert).returning();
-                return reply
-                    .code(201)
-                    .header("location", fastify.listeningOrigin + "/vehicles/" + vehicle!.id)
-                    .send({ vehicle_id: vehicle!.id });
+                if (vehicle) {
+                    return reply
+                        .code(200)
+                        .header("location", fastify.listeningOrigin + "/vehicles/" + vehicle!.id)
+                        .send(vehicle);
+                }
             } catch {
                 return reply.badRequest();
             }
@@ -36,9 +46,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         {
             schema: {
                 response: {
-                    200: Type.Object({
-                        vehicles: Type.Array(createSelectSchema(vehiclesTable))
-                    })
+                    200: Type.Object(vehiclePrivateFields.TypeBoxSchema)
                 }
             }
         },

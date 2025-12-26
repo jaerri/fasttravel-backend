@@ -1,8 +1,8 @@
 import { type FastifyPluginAsyncTypebox, Type } from "@fastify/type-provider-typebox";
 import { usersTable } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
-import { publicUserView } from "../../db/views.js";
-import type { IParamsId } from "../../validation_schemas/shared.js";
+import { userPublicFields } from "../../viewSchemas/users.js";
+import type { IParamsId } from "../../viewSchemas/shared.js";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     const { db } = fastify
@@ -12,8 +12,8 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             if (isNaN(id)) return reply.notFound();
 
             const [data] = await db
-                .select()
-                .from(publicUserView)
+                .select(userPublicFields.DBView)
+                .from(usersTable)
                 .where(eq(usersTable.id, id))
                 .limit(1);
             if (data) {

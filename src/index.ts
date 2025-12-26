@@ -5,9 +5,17 @@ import sensible from "@fastify/sensible"
 import path from 'node:path';
 import auth from './plugins/auth.js';
 import drizzledb from './plugins/drizzle.js';
-import { ReturnTypeInstantiate } from '@fastify/type-provider-typebox';
+import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
-const fastify = Fastify.fastify({ logger: true });
+const fastify = Fastify.fastify({ 
+    logger: true,
+    ajv: {
+        customOptions: {
+            strict: true,
+            removeAdditional: false
+        }
+    }
+ }).withTypeProvider<TypeBoxTypeProvider>();
 
 fastify.register(auth);
 fastify.register(drizzledb);
@@ -36,5 +44,4 @@ fastify.setErrorHandler((err: Fastify.FastifyError, request, reply) => {
     return reply.internalServerError();
 })
 fastify.register(sensible);
-
 fastify.listen({ port: Number(process.env.PORT) ?? 3000 });

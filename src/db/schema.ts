@@ -1,4 +1,4 @@
-import { pgEnum, timestamp, integer, pgTable, text, date } from "drizzle-orm/pg-core";
+import { pgEnum, timestamp, integer, pgTable, text, date, real } from "drizzle-orm/pg-core";
 
 export const driverStatusEnum = pgEnum('driver_status', ['active', 'suspended', 'pending', 'false']);
 
@@ -19,9 +19,9 @@ export const usersTable = pgTable('users', {
     bio: text(),
     photo: text(),
     driverStatus: text(),
-    ratingOverall: integer(),
-    createdAt: timestamp().defaultNow(),
-    updatedAt: timestamp().defaultNow().$onUpdate(() => new Date()),
+    ratingOverall: real(),
+    createdAt: timestamp({mode:"string"}).defaultNow(),
+    updatedAt: timestamp({mode:"string"}).defaultNow().$onUpdate(() => new Date().toISOString()),
 });
 export const vehiclesTable = pgTable('vehicles', {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -35,5 +35,7 @@ export const vehiclesTable = pgTable('vehicles', {
     license: integer(),
     photo: text(),
     seats: integer(),
-    vehicleFeatures: text().array()
+    vehicleFeatures: text().array(),
+    createdAt: timestamp({mode:"string"}).defaultNow(),
+    updatedAt: timestamp({mode:"string"}).defaultNow().$onUpdate(() => new Date().toISOString()),
 });
