@@ -1,5 +1,5 @@
 import { type FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
-import { Type } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import { vehiclesTable } from "../../db/schema.js";
 import type { onRequestHookHandler } from "fastify";
 import type { IParamsId } from "../../viewSchemas/shared.js";
@@ -42,14 +42,16 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             }
         }
     );
-    fastify.get("/",
+
+    fastify.get("/me",
         {
             schema: {
                 response: {
                     200: Type.Object({
                         vehicles: Type.Array(
-                        Type.Object(vehiclePrivateFields.TypeBoxSchema)
-                    )})
+                            Type.Object({ id: Type.Integer(), ...vehiclePrivateFields.TypeBoxSchema })
+                        )
+                    })
                 }
             }
         },
@@ -59,6 +61,32 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
                 .from(vehiclesTable)
                 .where(eq(vehiclesTable.ownerId, ownerId))
             return reply.send({ vehicles: vehicles });
+        }
+    );
+    fastify.put<{ Params: IParamsId, Body: Static<typeof vehicleUpdateTypeBox> }>("/:id",
+        {
+            schema: {
+                body: vehicleUpdateTypeBox,
+                response: {
+                    200: vehicleUpdateTypeBox
+                }
+            },
+        },
+        async (request, reply) => {
+            const vehicleId = request.params.id;
+            const ownerId = request.user.id;
+            const update = request.body;
+
+            if (isNaN(vehicleId)) return reply.notFound();
+            const [updated] = await db.update(vehiclesTable).set(update).where(
+                and(
+                    eq(vehiclesTable.id, vehicleId),
+                    eq(vehiclesTable.ownerId, ownerId)
+                )
+            ).returning();
+            if (updated) {
+                return reply.code(200).send(updated);
+            } else return reply.notFound();
         }
     );
     fastify.delete<{ Params: IParamsId }>("/:id",

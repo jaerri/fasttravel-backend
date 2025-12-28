@@ -13,12 +13,12 @@ export const userPublicFields = new CombinedFields({
     photo: [Type.String(), usersTable.photo],
     driverStatus: [Type.String(), usersTable.driverStatus],
     ratingOverall: [Type.Number(), usersTable.ratingOverall],
-    createdAt: [Type.String({ format: "time" }), usersTable.createdAt],
 })
 export const userPrivateFields = new CombinedFields({
     email: [Type.String(), usersTable.email],
     address: [Type.String(), usersTable.address],
     postalCode: [Type.String(), usersTable.postalCode],
     phone: [Type.Integer(), usersTable.phone],
+    createdAt: [Type.String({ format: "time" }), usersTable.createdAt],
     ...userPublicFields.data
 })

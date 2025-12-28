@@ -51,16 +51,3 @@ export class CombinedFields<
     }
 }
 // i sank oh so many hours into this
-
-        // Object.fromEntries(
-        //     Object.entries(this.data).map<[keyof T, T[keyof T][0]]>(([k, v]) => {
-        //         const dbCol = v[1];
-
-        //         let val = true as IsNotNull<typeof dbCol>
-        //         if (val) {
-        //             return [k, v[0]];
-        //         } else {
-        //             return [k, Type.Union([v[0], Type.Null()])];
-        //         }
-        //     })
-        // );

@@ -9,11 +9,13 @@ export const vehiclePublicFields = new CombinedFields({
     year: [Type.Integer(), vehiclesTable.year],
     color: [Type.String(), vehiclesTable.color],
     plateNumber: [Type.String(), vehiclesTable.plateNumber],
-    license: [Type.Integer(), vehiclesTable.license],
     photo: [Type.String(), vehiclesTable.photo],
     seats: [Type.Integer(), vehiclesTable.seats],
     vehicleFeatures: [Type.Array(Type.String()), vehiclesTable.vehicleFeatures],
 });
 export const vehiclePrivateFields = new CombinedFields({
-    ...vehiclePublicFields.data
+    ...vehiclePublicFields.data,
+
+    license: [Type.Integer(), vehiclesTable.license],
+    createdAt: [Type.String({ format: "time" }), vehiclesTable.createdAt],
 })
