@@ -8,6 +8,13 @@ import bcrypt from 'bcrypt';
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     const { db } = fastify
     fastify.get<{ Params: IParamsId }>('/:id',
+        {
+            schema: {
+                response: {
+                    200: userPublicFields.TypeBoxSchema
+                }
+            }
+        },
         async (request, reply) => {
             const { id } = request.params;
             if (isNaN(id)) return reply.notFound();

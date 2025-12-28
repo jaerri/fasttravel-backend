@@ -90,6 +90,13 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         }
     );
     fastify.delete<{ Params: IParamsId }>("/:id",
+        {
+            schema: {
+                response: {
+                    204: Type.Null({description: "Vehicle deleted"})
+                }
+            }
+        },
         async (request, reply) => {
             const vehicleId = request.params.id;
             const ownerId = request.user.id;
