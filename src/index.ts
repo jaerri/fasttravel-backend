@@ -8,6 +8,7 @@ import drizzledb from './plugins/drizzle.js';
 import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
+import fastifyRateLimit from '@fastify/rate-limit';
 
 const fastify = Fastify.fastify({
     logger: true,
@@ -42,6 +43,10 @@ fastify.register(fastifyAutoload, {
     dir: path.join(import.meta.dirname, "routes"),
     autoHooks: true,
     cascadeHooks: true,
+});
+await fastify.register(fastifyRateLimit, {
+    max: 30,
+    timeWindow: '1 minute'
 });
 fastify.setErrorHandler((err: Fastify.FastifyError, request, reply) => {
     fastify.log.error(

@@ -39,8 +39,8 @@ export const vehiclesTable = pgTable('vehicles', {
     createdAt: timestamp({mode:"string"}).defaultNow(),
     updatedAt: timestamp({mode:"string"}).defaultNow().$onUpdate(() => new Date().toISOString()),
 });
-export const ridesTable = pgTable('rides', {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    driverId: integer().references(() => usersTable.id).notNull(), // foreign key to users.id
-    vehicleId: integer().references(() => vehiclesTable.id).notNull(), // foreign key to users.id
-})
+// export const ridesTable = pgTable('rides', {
+//     // id: integer().primaryKey().generatedAlwaysAsIdentity(),
+//     // driverId: integer().references(() => usersTable.id).notNull(), // foreign key to users.id
+//     // vehicleId: integer().references(() => vehiclesTable.id).notNull(), // foreign key to vehicles.id
+// })
